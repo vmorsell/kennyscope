@@ -1,0 +1,58 @@
+{{define "layout"}}<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{.Title}} · kennyscope</title>
+<style>
+:root {
+  --fg: #e6e6e6;
+  --fg-dim: #9aa0a6;
+  --bg: #0f1115;
+  --bg-2: #181b21;
+  --accent: #c8a2c8;
+  --stderr: #f07178;
+  --boot: #82aaff;
+  --shutdown: #c3e88d;
+  --mono: ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+* { box-sizing: border-box; }
+body { margin:0; font-family: var(--mono); background: var(--bg); color: var(--fg); font-size: 13px; line-height: 1.5; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+header { padding: 16px 24px; border-bottom: 1px solid #222; display:flex; align-items:baseline; gap: 16px; }
+header h1 { margin:0; font-size: 16px; font-weight: 600; }
+header .crumb { color: var(--fg-dim); font-size: 12px; }
+main { padding: 16px 24px; max-width: 1400px; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: 6px 12px; border-bottom: 1px solid #222; vertical-align: top; }
+th { color: var(--fg-dim); font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.dim { color: var(--fg-dim); }
+.tag { display: inline-block; padding: 1px 6px; border-radius: 3px; background: var(--bg-2); font-size: 11px; }
+.tag.stderr { background: rgba(240,113,120,0.2); color: var(--stderr); }
+.tag.boot { background: rgba(130,170,255,0.2); color: var(--boot); }
+.tag.shutdown { background: rgba(195,232,141,0.2); color: var(--shutdown); }
+.event-row td { padding: 4px 12px; }
+.event-row td.raw { font-family: var(--mono); white-space: pre-wrap; word-break: break-all; color: var(--fg-dim); }
+.event-row.boot td.raw { color: var(--boot); }
+.event-row.shutdown td.raw { color: var(--shutdown); }
+.event-row.stderr td.raw { color: var(--stderr); }
+.pretty { white-space: pre-wrap; word-break: break-all; background: var(--bg-2); padding: 8px 12px; border-radius: 4px; margin: 4px 0; }
+.meta { color: var(--fg-dim); font-size: 12px; margin-bottom: 16px; }
+.meta span { margin-right: 16px; }
+footer { padding: 24px; color: var(--fg-dim); font-size: 11px; }
+</style>
+</head>
+<body>
+<header>
+  <h1><a href="/">kennyscope</a></h1>
+  <span class="crumb">{{.Title}}</span>
+  <span class="crumb" style="margin-left:auto">{{.Now}}</span>
+</header>
+<main>
+{{block "content" .}}{{end}}
+</main>
+<footer>observing quietly</footer>
+</body>
+</html>{{end}}

@@ -1,0 +1,48 @@
+# kennyscope — a small observer watching Kenny's container from outside.
+#
+# Deploy as its own Coolify resource. kennyscope reaches the host Docker
+# daemon through docker-socket-proxy, which exposes only the read-only
+# container + logs endpoints. Kenny's container is discovered by name
+# substring (KENNY_CONTAINER_MATCH, default "kenny") and its stdout/stderr
+# is streamed via the Docker API — nothing is injected into Kenny.
+
+services:
+  kennyscope:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    expose:
+      - "8080"
+    volumes:
+      - kennyscope-state:/state
+    environment:
+      STATE_DIR: /state
+      HTTP_ADDR: ":8080"
+      DOCKER_HOST: http://docker-socket-proxy:2375
+      KENNY_CONTAINER_MATCH: ${KENNY_CONTAINER_MATCH:-kenny}
+      OBSERVER_USER: ${OBSERVER_USER:-}
+      OBSERVER_PASSWORD: ${OBSERVER_PASSWORD:-}
+    depends_on:
+      - docker-socket-proxy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/healthz || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  docker-socket-proxy:
+    image: tecnativa/docker-socket-proxy:0.2.0
+    restart: unless-stopped
+    environment:
+      CONTAINERS: "1"
+      LOGS: "1"
+      # Everything else defaults to 0 (denied).
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    expose:
+      - "2375"
+
+volumes:
+  kennyscope-state:

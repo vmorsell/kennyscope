@@ -1,0 +1,12 @@
+.git
+.DS_Store
+.env
+.env.local
+/state
+/tmp
+/bin
+*.test
+*.out
+coverage.*
+.idea
+.vscode

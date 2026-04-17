@@ -1,0 +1,36 @@
+{{define "content"}}
+<div class="meta">
+  <span>{{len .Lives}} lives recorded</span>
+  {{if .CurrentLife}}<span>currently watching life #{{.CurrentLife.LifeID}}</span>{{end}}
+</div>
+<table>
+<thead>
+<tr>
+  <th class="num">life</th>
+  <th>started</th>
+  <th>ended</th>
+  <th>duration</th>
+  <th class="num">events</th>
+  <th>container</th>
+</tr>
+</thead>
+<tbody>
+{{range .Lives}}
+<tr>
+  <td class="num"><a href="/lives/{{.LifeID}}">#{{.LifeID}}</a></td>
+  <td>{{formatTime .StartedAt}}</td>
+  <td>
+    {{if .EndedAt.Valid}}{{formatTime .EndedAt.Time}}
+    {{else}}<span class="tag boot">running</span>
+    {{end}}
+  </td>
+  <td>{{duration .StartedAt .EndedAt}}</td>
+  <td class="num">{{.EventCount}}</td>
+  <td class="dim">{{shortID .ContainerID}}</td>
+</tr>
+{{else}}
+<tr><td colspan="6" class="dim">No lives recorded yet. Waiting for kenny.boot...</td></tr>
+{{end}}
+</tbody>
+</table>
+{{end}}

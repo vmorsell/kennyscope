@@ -1,0 +1,44 @@
+{{define "content"}}
+<div class="meta">
+  <span><a href="/">&larr; all lives</a></span>
+  <span>life <strong>#{{.Life.LifeID}}</strong></span>
+  <span>started {{formatTime .Life.StartedAt}}</span>
+  {{if .Life.EndedAt.Valid}}
+    <span>ended {{formatTime .Life.EndedAt.Time}}</span>
+    <span>duration {{duration .Life.StartedAt .Life.EndedAt}}</span>
+  {{else}}
+    <span class="tag boot">running</span>
+  {{end}}
+  <span>{{.Life.EventCount}} events</span>
+  <span class="dim">container {{shortID .Life.ContainerID}}</span>
+</div>
+
+<table>
+<thead>
+<tr>
+  <th>at</th>
+  <th>stream</th>
+  <th>level</th>
+  <th>msg</th>
+  <th>raw</th>
+</tr>
+</thead>
+<tbody>
+{{range .Events}}
+<tr class="event-row {{rowClass .}}">
+  <td class="dim">{{formatTime .At}}</td>
+  <td>
+    {{if eq (string .Stream) "stderr"}}<span class="tag stderr">stderr</span>
+    {{else}}<span class="dim">stdout</span>
+    {{end}}
+  </td>
+  <td>{{if .Level}}{{.Level}}{{else}}<span class="dim">·</span>{{end}}</td>
+  <td>{{if .Msg}}<strong>{{.Msg}}</strong>{{else}}<span class="dim">·</span>{{end}}</td>
+  <td class="raw">{{prettyJSON .Raw}}</td>
+</tr>
+{{else}}
+<tr><td colspan="5" class="dim">No events for this life yet.</td></tr>
+{{end}}
+</tbody>
+</table>
+{{end}}
