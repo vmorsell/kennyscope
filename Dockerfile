@@ -18,16 +18,20 @@ FROM debian:bookworm-slim AS runtime
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         ca-certificates \
+        gosu \
         tini \
         wget \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /out/kennyscope /usr/local/bin/kennyscope
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 VOLUME ["/state"]
 
 EXPOSE 8080
 
-USER nobody
-
-ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/kennyscope"]
+# Entrypoint runs as root briefly to fix /state ownership (volume mount
+# clobbers Dockerfile chown), then gosu-drops to the nobody user.
+ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/entrypoint.sh"]
+CMD ["kennyscope"]
